@@ -1,0 +1,130 @@
+[
+  {
+    "id": "dica-oleo-motor",
+    "slug": "quando-trocar-oleo-motor-filtros",
+    "title": "Quando trocar o óleo do motor: tempo ou quilometragem?",
+    "summary": "Entenda a diferença entre rodagem urbana severa e rodovia, e por que esperar atingir 10.000 km no trânsito diário pode comprometer a vida útil do motor.",
+    "category": "oleo",
+    "categoryLabel": "Óleo & Filtros",
+    "readTime": "3 min",
+    "publishedAt": "2026-03-15",
+    "author": "Equipe Técnica Mineiro Auto Center",
+    "keyPoints": [
+      "O óleo lubrificante oxida por tempo, mesmo em veículos que rodam pouco.",
+      "Uso urbano com anda-e-pára constante e trajetos curtos é classificado como uso severo.",
+      "A cada troca de óleo, a substituição do filtro de óleo é indispensável para não contaminar o fluido novo.",
+      "Respeite sempre a viscosidade (ex: 5W30, 0W20) e as normas API/ACEA exigidas pela montadora."
+    ],
+    "symptoms": [
+      "Luz de óleo acesa ou piscando no painel de instrumentos.",
+      "Ruído metálico ao ligar o veículo pela manhã (tuchos batendo).",
+      "Óleo escuro demais, viscoso ou abaixo do nível mínimo na vareta de medição.",
+      "Aumento repentino no consumo de combustível ou fumaça no escapamento."
+    ],
+    "recommendedInterval": "A cada 5.000 km a 7.500 km em uso urbano severo, ou no máximo a cada 6 a 12 meses.",
+    "relatedServiceId": "oleo-filtros",
+    "active": true,
+    "content": [
+      "Muitos motoristas em Uberlândia acreditam que o óleo do motor só precisa ser trocado quando o odômetro atinge a marca dos 10.000 km. No entanto, o manual da maioria dos fabricantes estabelece duas condições distintas: uso normal (rodovias em velocidade de cruzeiro) e uso severo.",
+      "No trânsito urbano — marcado por semáforos, arrancadas, paradas frequentes e trajetos de menos de 15 minutos onde o motor não atinge a temperatura ideal de trabalho —, o óleo degrada muito mais rapidamente pela diluição de combustível e condensação de umidade. Por isso, o intervalo ideal cai para cerca de 5.000 a 7.500 km ou 6 meses, o que ocorrer primeiro.",
+      "Outro erro comum é trocar o óleo e deixar o filtro antigo. O filtro retém partículas abrasivas e resíduos metálicos; ao manter o filtro velho, até 400 ml de óleo sujo e contaminado entram em circulação imediata com o óleo novo, reduzindo sua capacidade de proteção antiatrito.",
+      "No Mineiro Auto Center, realizamos a drenagem completa e conferimos o filtro correto para o motor do seu veículo no Bairro Brasil, com total transparência."
+    ]
+  },
+  {
+    "id": "dica-freios-seguranca",
+    "slug": "sinais-desgaste-pastilhas-discos-freio",
+    "title": "Freios chiando ou pedal vibrando: como identificar o desgaste das pastilhas",
+    "summary": "Aprenda a reconhecer os primeiros ruídos sonoros e mudanças no tato do pedal antes que o disco de freio seja danificado ou a segurança seja comprometida.",
+    "category": "freios",
+    "categoryLabel": "Freios & Segurança",
+    "readTime": "4 min",
+    "publishedAt": "2026-03-22",
+    "author": "Equipe Técnica Mineiro Auto Center",
+    "keyPoints": [
+      "Chiados agudos durante a frenagem geralmente indicam que o sensor sonoro da pastilha atingiu o limite de segurança.",
+      "Vibração no pedal de freio ou no volante ao pisar em velocidades médias/altas indica empenamento do disco.",
+      "O fluido de freio é higroscópico (absorve água do ar) e deve ser testado anualmente com caneta medidora de ponto de ebulição.",
+      "Nunca complete o reservatório de freio sem verificar o desgaste das pastilhas: à medida que gastam, o nível desce naturalmente."
+    ],
+    "symptoms": [
+      "Ruído agudo de atrito metálico (chiado) toda vez que aciona o pedal.",
+      "Pedal de freio esponjoso ou descendo mais do que o normal até dar resposta.",
+      "Carro puxando levemente para um dos lados durante frenagens mais fortes.",
+      "Volante tremendo ao frear em descidas ou saídas de rodovia."
+    ],
+    "recommendedInterval": "Inspeção visual preventiva a cada 10.000 km ou ao menor sinal de ruído e vibração.",
+    "relatedServiceId": "freios",
+    "active": true,
+    "content": [
+      "O sistema de freios é o item de segurança ativa mais crítico do veículo. As pastilhas possuem um material de atrito que se desgasta gradativamente a cada frenagem. Quando a espessura da pastilha atinge cerca de 2 a 3 milímetros, a base metálica começa a raspar no disco de freio, gerando ruído e danificando a pista do disco.",
+      "Se você ouvir um assobio metálico agudo constante, é hora de parar na oficina imediatamente. Continuar rodando com pastilha no fim da vida útil pode riscar profundamente o disco, elevando consideravelmente o custo do reparo — já que além das pastilhas novas, será obrigatória a troca ou retífica dos discos.",
+      "Outro sintoma frequente é a pulsação no pedal ao frear. Esse empenamento costuma ocorrer quando o disco quente entra em contato abrupto com poças d'água (choque térmico) ou por excesso de torque nos parafusos de roda.",
+      "Aqui no Mineiro Auto Center examinamos a espessura das pastilhas, os discos ventilados e medimos a umidade do fluido de freio em nosso elevador técnico."
+    ]
+  },
+  {
+    "id": "dica-alinhamento-balanceamento",
+    "slug": "quando-fazer-alinhamento-3d-balanceamento",
+    "title": "Alinhamento 3D e Balanceamento: quando fazer para não perder os pneus?",
+    "summary": "Pancadas em buracos, volante torto e desgaste de ombro do pneu são alertas claros de desalinhamento de convergência e cáster.",
+    "category": "pneus",
+    "categoryLabel": "Geometria & Pneus",
+    "readTime": "3 min",
+    "publishedAt": "2026-03-28",
+    "author": "Equipe Técnica Mineiro Auto Center",
+    "keyPoints": [
+      "O alinhamento corrige os ângulos de cambagem, convergência e cáster para o veículo rodar em linha reta.",
+      "O balanceamento equaliza a distribuição de peso da roda/pneu, eliminando vibrações na direção.",
+      "Pneus desalinhados podem sofrer desgaste irregular em menos de 3.000 km de uso.",
+      "Fazer o rodízio de pneus junto com o alinhamento 3D aumenta a durabilidade do jogo em até 30%."
+    ],
+    "symptoms": [
+      "Volante torto em linha reta ou carro 'puxando' para a direita ou esquerda.",
+      "Desgaste excessivo nas bordas internas ou externas da banda de rodagem dos pneus.",
+      "Volante vibrando intensamente em velocidades entre 80 km/h e 100 km/h.",
+      "Ruído de rolagem ruidoso ou pneu cantando em curvas leves."
+    ],
+    "recommendedInterval": "A cada 10.000 km, na troca de pneus ou sempre após impactos fortes contra buracos ou guias.",
+    "relatedServiceId": "alinhamento-balanceamento",
+    "active": true,
+    "content": [
+      "As vias urbanas com emendas de asfalto, quebra-molas e buracos exigem muito da geometria veicular. Quando uma roda atinge um desnível com impacto, os braços de direção e barras axiais podem sofrer microdeslocamentos suficientes para desregular a convergência.",
+      "Um carro com divergência de apenas alguns milímetros é o equivalente a arrastar o pneu lateralmente pelo asfalto enquanto gira. O resultado é o desgaste precoce do ombro do pneu, forçando o motorista a trocar pneus muito antes do tempo.",
+      "Já a vibração sentida no volante é sintoma característico de desbalanceamento das rodas dianteiras (ou nos bancos/assoalho se for nas traseiras). Pequenas perdas de chumbador de roda geram forças centrífugas que sobrecarregam rolamentos e caixas de direção.",
+      "Em nossa rampa computadorizada de alta precisão 3D, conferimos os ângulos exatos estabelecidos pelo fabricante para garantir dirigibilidade suave e máxima economia de borracha e combustível."
+    ]
+  },
+  {
+    "id": "dica-suspensao-amortecedores",
+    "slug": "ruidos-suspensao-amortecedores-batendo",
+    "title": "Ruídos na suspensão: como identificar batidas secas e instabilidade",
+    "summary": "Barulhos metálicos ao passar por lombadas, rangidos e sensação de flutuação em curvas denunciam o fim da vida útil de amortecedores, buchas e pivôs.",
+    "category": "suspensao",
+    "categoryLabel": "Suspensão & Estabilidade",
+    "readTime": "4 min",
+    "publishedAt": "2026-04-02",
+    "author": "Equipe Técnica Mineiro Auto Center",
+    "keyPoints": [
+      "Amortecedores gastos aumentam a distância de frenagem em até 2,6 metros a 50 km/h.",
+      "Vazamento de óleo na haste do amortecedor indica perda de vedação e perda total de eficiência hidráulica.",
+      "Batidas secas ('toc-toc') em paralelepípedos ou quebra-molas costumam vir de bieletas ou buchas de barra estabilizadora.",
+      "Folgas em pivôs e terminais de direção podem causar perda repentina de controle da roda."
+    ],
+    "symptoms": [
+      "Batidas secas no assoalho ou na dianteira ao transitar em asfalto irregular.",
+      "Carro balançando excessivamente para cima e para baixo após passar por ondulações.",
+      "Pneus 'pulando' ou perdendo contato com o solo em curvas e frenagens.",
+      "Marcas evidentes de óleo escorrendo pelas torres dos amortecedores dianteiros ou traseiros."
+    ],
+    "recommendedInterval": "Revisão preventiva a cada 20.000 km ou imediatamente se houver ruídos e vazamento de óleo.",
+    "relatedServiceId": "suspensao-amortecedores",
+    "active": true,
+    "content": [
+      "O sistema de suspensão não serve apenas para garantir o conforto dos passageiros; sua principal função é manter os quatro pneus em contato permanente com o solo sob qualquer condição de piso e velocidade.",
+      "Amortecedores fadigados não conseguem frear o movimento oscilatório das molas. Com isso, o pneu quica sobre o asfalto, reduzindo drasticamente a área de contato da borracha. Isso amplia o risco de aquaplanagem na chuva e aumenta perigosamente a distância necessária para parar o veículo.",
+      "Além dos amortecedores, componentes menores como bieletas, buchas de bandeja e pivôs sofrem constante torção. Buchas estouradas causam ruídos metálicos desagradáveis e alteram os ângulos da suspensão, tornando o veículo arisco e impreciso nas manobras.",
+      "Na oficina Mineiro Auto Center, levantamos o carro em nossos elevadores para testar folgas de alavanca com equipamentos adequados, apontando com honestidade somente o que realmente precisa ser reparado."
+    ]
+  }
+]

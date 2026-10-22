@@ -1,0 +1,6 @@
+{
+  "name": "Mineiro Auto Center e Mecânica",
+  "description": "Oficina mecânica e auto center no bairro Brasil em Uberlândia–MG. Troca de óleo, alinhamento 3D, freios, suspensão, injeção eletrônica e revisão preventiva com transparência e agilidade.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
