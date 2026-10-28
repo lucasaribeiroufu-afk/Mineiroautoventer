@@ -205,7 +205,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid #83adff; outline-offs
 }
 
 /* The launch poster and interactive viewer share one professionally authored asset. */
-.wheel-launch { height: 500px; display: block; background: #f0f0f0; border-color: #ffffff30; }
+.wheel-launch { height: 560px; display: block; background: #f0f0f0; border-color: #ffffff30; }
 .wheel-launch > img { width: 100%; height: 100%; object-fit: contain; }
 .wheel-launch > span { position: absolute; right: 24px; bottom: 24px; display: flex; align-items: center; gap: 12px; border-radius: 28px; background: #081426f2; color: white; padding: 17px 23px; font-size: 15px; box-shadow: 0 5px 20px #0003; }
 .wheel-launch small { display: none; }
@@ -225,7 +225,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid #83adff; outline-offs
 .realistic-wheel-toolbar button:hover, .realistic-wheel-toolbar a:hover { border-color: #80a9ff; }
 .realistic-wheel-credit { padding: 0 24px 20px; font-size: 10px; line-height: 1.8; color: #a8b6c9; }
 @media (max-width:760px) {
- .wheel-launch { height: 350px; }
+ .wheel-launch { height: 460px; }
  .wheel-launch > img { width: 100%; max-height: none; }
  .wheel-launch > span { right: 15px; bottom: 15px; padding: 13px 17px; font-size: 12px; }
  .realistic-wheel-stage { height: 460px; }
