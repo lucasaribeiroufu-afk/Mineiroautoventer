@@ -1,3 +1,4 @@
+import { WorkshopManifesto, CareScenarios, TechnologyStory, FAQSection, FinalContact } from './components/ModernSections';
 import { useState, useEffect } from 'react';
 import { CompanySettings, ServiceItem } from './types';
 import { StorageService } from './services/storage';
@@ -125,6 +126,9 @@ export default function App() {
           onOpenAdmin={() => setIsAdminOpen(true)}
         />
 
+        <WorkshopManifesto onOpenQuote={handleOpenQuoteGeneral} />
+        <CareScenarios onService={handleOpenQuoteWithNamedService} />
+
         {/* 2. Serviços */}
         <ScrollReveal>
           <ServicesSection
@@ -133,6 +137,8 @@ export default function App() {
             onSelectServiceForQuote={handleOpenQuoteWithService}
           />
         </ScrollReveal>
+
+        <TechnologyStory />
 
         <EquipmentSection onOpenQuoteWithService={handleOpenQuoteWithNamedService} />
 
@@ -171,6 +177,8 @@ export default function App() {
           <InstagramSection settings={settings} />
         </ScrollReveal>
 
+        <FAQSection />
+
         {/* 7. Localização & Contato */}
         <ScrollReveal>
           <LocationSection 
@@ -178,6 +186,7 @@ export default function App() {
             onOpenAppointment={() => setIsAppointmentOpen(true)}
           />
         </ScrollReveal>
+        <FinalContact settings={settings} onOpenAppointment={() => setIsAppointmentOpen(true)} />
       </main>
 
       {/* Footer */}

@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import { fetchVerifiedAvailability, workshopDate, workshopTomorrow } from '../src/services/bookingAvailability';
+assert.equal(workshopDate(new Date('2026-10-29T01:30:00Z')),'2026-10-28');
+assert.equal(workshopTomorrow(new Date('2026-10-29T01:30:00Z')),'2026-10-29');
+const now = new Date('2026-10-28T13:30:00Z');
+const payload = {date:'2026-10-28',isOpen:true,defaultCapacityPerSlot:3,slots:[{time:'10:00',available:true},{time:'11:00',available:true}]};
+const mock = (data: unknown, status=200) => (async()=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json'}})) as typeof fetch;
+const result=await fetchVerifiedAvailability('2026-10-28',now,mock(payload));
+assert.equal(result.slots[0].available,false);assert.equal(result.slots[1].available,true);
+await assert.rejects(()=>fetchVerifiedAvailability('2026-10-28',now,mock({},503)),/consultar a agenda/);
+await assert.rejects(()=>fetchVerifiedAvailability('2026-10-28',now,mock({})),/horários válidos/);
+await assert.rejects(()=>fetchVerifiedAvailability('2026-02-30',now,mock(payload)),/data válida/);
+const closed=await fetchVerifiedAvailability('2026-10-28',now,mock({...payload,isOpen:false}));
+assert.ok(closed.slots.every(slot=>!slot.available));
+const wrongDate={...payload,date:'2026-10-29'};
+await assert.rejects(()=>fetchVerifiedAvailability('2026-10-28',now,mock(wrongDate)),/horários válidos/);
+console.log('Booking checks passed: failed API never becomes free availability; past slots, closed days, invalid dates and Sao Paulo midnight validated.');

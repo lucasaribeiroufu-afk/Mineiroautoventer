@@ -1,15 +1,4 @@
-import React from 'react';
-import { ArrowUpRight } from 'lucide-react';
-const steps = [
-  ['Conversa', 'Conte o que seu carro precisa e solicite um horário com a equipe.'],
-  ['Diagnóstico', 'A avaliação técnica identifica os cuidados indicados para o veículo.'],
-  ['Orçamento', 'Converse com a oficina sobre os serviços e valores antes de autorizar.'],
-  ['Cuidado', 'Com os serviços aprovados, seguimos para a manutenção e a entrega.'],
-];
-export const ProcessSection: React.FC<{ onOpenAppointment: () => void }> = ({ onOpenAppointment }) => (
-  <section id="processo" className="editorial-process">
-    <div className="editorial-section-head"><span className="editorial-eyebrow">— DO PRIMEIRO CONTATO À ENTREGA</span><h2>Mais clareza.<br /><em>Em cada etapa.</em></h2><p>Entenda o caminho do seu veículo dentro da nossa oficina.</p></div>
-    <ol className="process-grid">{steps.map(([title, text], i) => <li key={title}><span className="step-number">0{i + 1}</span><h3>{title}</h3><p>{text}</p></li>)}</ol>
-    <button className="editorial-button primary" onClick={onOpenAppointment}>Começar pelo agendamento <ArrowUpRight size={18} /></button>
-  </section>
-);
+import React, { useEffect, useRef, useState } from 'react';
+import { ArrowUpRight, ArrowDown } from 'lucide-react';
+const steps=[{title:'Primeiro, a conversa.',text:'Conte como está o carro e solicite uma data. O pedido precisa ser confirmado pela equipe.',image:'/assets/images/fachada_mineiro_autocenter_2749.jpg',label:'CONTATO'},{title:'Depois, a avaliação.',text:'Histórico, sintomas e inspeção ajudam a identificar os cuidados indicados para o veículo.',image:'/assets/images/corghi-alinhamento-veiculo.webp',label:'DIAGNÓSTICO'},{title:'Clareza para decidir.',text:'Converse sobre o diagnóstico, o orçamento e os serviços antes de autorizar o trabalho.',image:'/assets/images/mecanica_revisao_motor.jpg',label:'ORÇAMENTO'},{title:'O cuidado segue com você.',text:'Confirme os serviços realizados e as orientações de manutenção na entrega do carro.',image:'/assets/images/oficina_mecanica_capo_aberto.jpg',label:'ENTREGA'}];
+export function ProcessSection({onOpenAppointment}:{onOpenAppointment:()=>void}){const host=useRef<HTMLElement>(null);const [active,setActive]=useState(0);const [manual,setManual]=useState(false);useEffect(()=>{let frame=0;const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');const onScroll=()=>{if(frame||manual||reduced.matches||window.innerWidth<761)return;frame=requestAnimationFrame(()=>{frame=0;const el=host.current;if(!el)return;const r=el.getBoundingClientRect();const range=el.offsetHeight-window.innerHeight;setActive(Math.max(0,Math.min(3,Math.floor((-r.top/Math.max(1,range))*4))));});};window.addEventListener('scroll',onScroll,{passive:true});onScroll();return()=>{window.removeEventListener('scroll',onScroll);cancelAnimationFrame(frame);};},[manual]);return <section id="processo" className="immersive-process" ref={host}><div className="process-stage">{steps.map((step,i)=><img key={step.image} src={step.image} alt="" aria-hidden="true" loading="lazy" className={'process-backdrop '+(i===active?'active':'')}/>)}<div className="process-shade"/><div className="process-story"><span className="editorial-eyebrow">— DO PRIMEIRO CONTATO À ENTREGA</span><span className="process-current">0{active+1}<small> / 04</small></span><h2>{steps[active].title}</h2><p>{steps[active].text}</p><button className="editorial-button primary" onClick={onOpenAppointment}>Solicitar atendimento <ArrowUpRight size={19}/></button></div><div className="process-navigation" aria-label="Etapas do atendimento">{steps.map((step,i)=><button key={step.label} aria-pressed={i===active} onClick={()=>{setManual(true);setActive(i);}}><span>0{i+1}</span>{step.label}</button>)}{manual&&<button onClick={()=>setManual(false)}>Retomar rolagem <ArrowDown size={15}/></button>}</div></div></section>;}

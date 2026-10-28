@@ -7,7 +7,7 @@ interface NavbarProps {
   onOpenAppointment: () => void;
   onOpenAdmin?: () => void;
 }
-const links = [['#servicos', 'Serviços'], ['#equipamentos', 'Equipamentos'], ['#oficina', 'A oficina'], ['#processo', 'Como funciona'], ['#contato', 'Contato']];
+const links = [['#servicos', 'Serviços'], ['#equipamentos', 'Equipamentos'], ['#tecnologia', 'Tecnologia'], ['#processo', 'Como funciona'], ['#duvidas', 'Dúvidas'], ['#contato', 'Contato']];
 export const Navbar: React.FC<NavbarProps> = ({ onOpenAppointment }) => {
   const [open, setOpen] = useState(false);
   return (

@@ -2,36 +2,8 @@ import React from 'react';
 import { ArrowDown, ArrowUpRight, MapPin } from 'lucide-react';
 import { CompanySettings } from '../types';
 import { REAL_IMAGE_FILENAMES } from '../utils/imagePaths';
-
-interface HeroProps {
-  settings: CompanySettings;
-  onOpenQuote: () => void;
-  onOpenAppointment: () => void;
-  onOpenAdmin?: () => void;
-}
-
-export const Hero: React.FC<HeroProps> = ({ settings, onOpenQuote, onOpenAppointment }) => (
-  <>
-    <section id="inicio" className="mineiro-hero">
-      <div className="hero-watermark" aria-hidden="true">MINEIRO</div>
-      <div className="hero-image-panel">
-        <img src={settings.workshopPhotos?.heroFacade || REAL_IMAGE_FILENAMES.heroFacade}
-          alt="Fachada do Mineiro Auto Center e Mecânica, no bairro Brasil em Uberlândia"
-          fetchPriority="high" decoding="async" />
-        <a href="#oficina" className="hero-photo-caption">NOSSA OFICINA. NOSSO COMPROMISSO. <ArrowUpRight size={18} /></a>
-      </div>
-      <div className="hero-content">
-        <span className="editorial-eyebrow"><span className="status-dot" /> BAIRRO BRASIL · UBERLÂNDIA, MG</span>
-        <h1>Seu carro.<br />Nossa <em>responsabilidade.</em></h1>
-        <p>Mecânica, alinhamento, freios e suspensão. Do diagnóstico à revisão, o cuidado que acompanha você em cada quilômetro.</p>
-        <div className="hero-actions">
-          <button className="editorial-button primary" onClick={onOpenAppointment}>Agendar serviço <ArrowUpRight size={19} /></button>
-          <button className="editorial-button secondary" onClick={onOpenQuote}>Solicitar orçamento <ArrowUpRight size={19} /></button>
-        </div>
-        <a className="hero-address" href={settings.googleMapsDestinationUrl} target="_blank" rel="noopener noreferrer"><MapPin size={16} /> {settings.street}, nº {settings.number}</a>
-      </div>
-      <div className="hero-bottom"><span>AUTO CENTER & MECÂNICA</span><a href="#servicos">Conheça nossos serviços <ArrowDown size={16} /></a></div>
-    </section>
-    <div className="service-ribbon" aria-label="Especialidades">ALINHAMENTO 3D <span>✦</span> FREIOS <span>✦</span> SUSPENSÃO <span>✦</span> REVISÃO PREVENTIVA <span>✦</span> MECÂNICA</div>
-  </>
-);
+interface HeroProps {settings:CompanySettings;onOpenQuote:()=>void;onOpenAppointment:()=>void;onOpenAdmin?:()=>void;}
+export const Hero:React.FC<HeroProps>=({settings,onOpenQuote,onOpenAppointment})=><>
+ <section id="inicio" className="mineiro-hero cinematic-hero"><div className="cinematic-images" aria-hidden="true">{[settings.workshopPhotos?.heroFacade||REAL_IMAGE_FILENAMES.heroFacade,settings.workshopPhotos?.aboutWorkshop||REAL_IMAGE_FILENAMES.aboutWorkshop,settings.workshopPhotos?.mechanicEngine||REAL_IMAGE_FILENAMES.mechanicEngine].map((src,i)=><img key={i} src={src} alt="" fetchPriority={i===0?'high':'low'} decoding="async" style={{animationDelay:`${i*6}s`}}/>)}</div><div className="hero-watermark" aria-hidden="true">MINEIRO</div><div className="hero-content"><span className="editorial-eyebrow"><span className="status-dot"/> BAIRRO BRASIL · UBERLÂNDIA, MG</span><h1>Cuidado de verdade.<br/>Em cada <em>quilômetro.</em></h1><p>Mecânica, alinhamento, freios e suspensão. Sua rotina merece um carro bem cuidado — e um atendimento com clareza.</p><div className="hero-actions"><button className="editorial-button primary" onClick={onOpenAppointment}>Solicitar agendamento <ArrowUpRight size={19}/></button><button className="editorial-button secondary" onClick={onOpenQuote}>Conversar sobre orçamento <ArrowUpRight size={19}/></button></div><a className="hero-address" href={settings.googleMapsDestinationUrl} target="_blank" rel="noopener noreferrer"><MapPin size={16}/> {settings.street}, nº {settings.number}</a></div><div className="hero-proof-grid"><a href="#tecnologia"><strong>3D</strong><span>Alinhamento<br/>computadorizado</span></a><a href="#equipamentos"><strong>Corghi</strong><span>Conheça a estrutura<br/>e os equipamentos</span></a><a href="#contato"><strong>Brasil</strong><span>Nosso bairro.<br/>Uberlândia, MG.</span></a></div><div className="hero-bottom"><span>AUTO CENTER & MECÂNICA</span><a href="#compromisso">Conheça o jeito Mineiro <ArrowDown size={16}/></a></div></section>
+ <div className="service-ribbon modern-ribbon" aria-label="Alinhamento 3D, freios, suspensão, revisão preventiva e mecânica"><div className="ribbon-track" aria-hidden="true">{[0,1].map(n=><span className="ribbon-copy" key={n}>ALINHAMENTO 3D <i>✦</i> FREIOS <i>✦</i> SUSPENSÃO <i>✦</i> REVISÃO PREVENTIVA <i>✦</i> MECÂNICA <i>✦</i></span>)}</div></div>
+</>;

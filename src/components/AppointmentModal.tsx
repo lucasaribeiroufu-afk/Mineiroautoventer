@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CompanySettings, ServiceItem, AppointmentRequest, ScheduleAvailability } from '../types';
 import { StorageService, OFFICIAL_WHATSAPP_PHONE } from '../services/storage';
+import { fetchVerifiedAvailability, workshopDate, workshopTomorrow } from '../services/bookingAvailability';
 import { X, Calendar, MessageSquare, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 
 interface AppointmentModalProps {
@@ -18,12 +19,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
   services,
   onOpenPrivacyPolicy,
 }) => {
-  // Tomorrow's date as initial date
-  const getTomorrowString = () => {
-    const d = new Date();
-    d.setDate(d.getDate() + 1);
-    return d.toISOString().split('T')[0];
-  };
+  const getTomorrowString = () => workshopTomorrow();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -38,6 +34,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
 
   const [availability, setAvailability] = useState<ScheduleAvailability | null>(null);
   const [loadingAvailability, setLoadingAvailability] = useState(false);
+  const [availabilityError, setAvailabilityError] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submittedApt, setSubmittedApt] = useState<AppointmentRequest | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,9 +46,11 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
 
     let isMounted = true;
     setLoadingAvailability(true);
+    setAvailability(null);
+    setAvailabilityError(null);
     setServerError(null);
 
-    StorageService.fetchAvailability(formData.preferredDate)
+    fetchVerifiedAvailability(formData.preferredDate)
       .then(res => {
         if (!isMounted) return;
         setAvailability(res);
@@ -62,7 +61,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
         }
       })
       .catch(err => {
-        console.warn('Erro ao carregar disponibilidade:', err);
+        if (isMounted) { setAvailability(null); setAvailabilityError(err.message || 'Não foi possível consultar a agenda. Fale com a equipe pelo WhatsApp.'); }
       })
       .finally(() => {
         if (isMounted) setLoadingAvailability(false);
@@ -80,7 +79,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
     const unsubscribe = StorageService.subscribeToScheduleEvents(event => {
       // Refresh availability if an appointment was created/updated or config changed
       if (formData.preferredDate) {
-        StorageService.fetchAvailability(formData.preferredDate).then(setAvailability).catch(() => {});
+        fetchVerifiedAvailability(formData.preferredDate).then(result => { setAvailability(result); setAvailabilityError(null); }).catch(() => { setAvailability(null); setAvailabilityError('A consulta à agenda foi interrompida. Tente outra data ou consulte a equipe.'); });
       }
     });
 
@@ -128,10 +127,13 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
     e.preventDefault();
     setServerError(null);
     if (!validate()) return;
+    if (loadingAvailability || availabilityError || !availability?.slots.some(slot => slot.time === formData.preferredTime && slot.available)) { setServerError('Consulte e selecione um horário disponível antes de enviar.'); return; }
 
     setIsSubmitting(true);
 
     try {
+      const latest = await fetchVerifiedAvailability(formData.preferredDate);
+      if (!latest.slots.some(slot => slot.time === formData.preferredTime && slot.available)) { setAvailability(latest); throw new Error('Este horário não está mais disponível. Selecione outro horário.'); }
       const created = await StorageService.submitAppointment({
         clientName: formData.name.trim(),
         whatsapp: formData.whatsapp.trim(),
@@ -193,7 +195,13 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
     onClose();
   };
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = workshopDate();
+  const hasAvailableSlot = !!availability?.slots.some(slot => slot.available);
+  const contactForAvailability = () => {
+    const phone = settings.whatsappPhone.replace(/\D/g, '') || OFFICIAL_WHATSAPP_PHONE;
+    const destination = phone.startsWith('55') && phone.length >= 12 ? phone : '55' + phone;
+    window.open(`https://wa.me/${destination}?text=${encodeURIComponent('Olá! Gostaria de consultar disponibilidade para ' + formData.serviceName + ' no Mineiro Auto Center.')}`, '_blank', 'noopener,noreferrer');
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm overflow-y-auto">
@@ -233,6 +241,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
               </div>
             )}
 
+            {availabilityError && <div role="alert" className="mb-4 p-4 rounded-xl bg-amber-950/40 border border-amber-800 text-sm text-amber-100"><p>{availabilityError}</p><button type="button" onClick={contactForAvailability} className="mt-3 underline font-semibold">Consultar disponibilidade pelo WhatsApp ↗</button></div>}
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Nome */}
               <div>
@@ -363,6 +372,8 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                     </div>
 
                     <select
+                      disabled={loadingAvailability || !availability || !!availabilityError || !hasAvailableSlot}
+                      aria-label="Horário pretendido"
                       value={formData.preferredTime}
                       onChange={e => setFormData({ ...formData, preferredTime: e.target.value })}
                       className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
@@ -378,9 +389,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                           </option>
                         ))
                       ) : (
-                        ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00'].map(t => (
-                          <option key={t} value={t}>{t}</option>
-                        ))
+                        <option value="">{loadingAvailability ? 'Consultando a agenda…' : 'Agenda indisponível'}</option>
                       )}
                     </select>
                   </div>
@@ -418,7 +427,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
               <div className="pt-2">
                 <button
                   type="submit"
-                  disabled={isSubmitting || (availability !== null && !availability.isOpen)}
+                  disabled={isSubmitting || loadingAvailability || !availability || !!availabilityError || !hasAvailableSlot}
                   className="w-full py-3.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-semibold text-sm transition-all shadow-md flex items-center justify-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-50"
                 >
                   {isSubmitting ? (
@@ -462,7 +471,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                 Agendamento sujeito à confirmação da oficina.
               </p>
               <p className="text-xs text-slate-400">
-                Seu pedido foi registrado em nossa agenda no servidor. Clique abaixo para enviar os detalhes pelo WhatsApp e concluir o contato.
+                Solicitação recebida. O envio da mensagem pelo WhatsApp é manual: toque no botão abaixo e envie a mensagem no aplicativo. A oficina ainda precisa confirmar o atendimento.
               </p>
             </div>
 
