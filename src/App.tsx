@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { CompanySettings, ServiceItem } from './types';
 import { StorageService } from './services/storage';
+import { EquipmentSection } from './components/EquipmentSection';
+import { ProcessSection } from './components/ProcessSection';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { ServicesSection } from './components/ServicesSection';
@@ -105,7 +107,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-blue-600 selection:text-white pb-16 sm:pb-0">
+    <div className="mineiro-site min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-blue-600 selection:text-white pb-16 sm:pb-0">
       {/* Navigation: Início, Serviços, Sobre, Agendamento e Contato */}
       <Navbar
         onOpenQuote={handleOpenQuoteGeneral}
@@ -132,12 +134,16 @@ export default function App() {
           />
         </ScrollReveal>
 
+        <EquipmentSection onOpenQuoteWithService={handleOpenQuoteWithNamedService} />
+
         {/* 3. Oficina em Fotografias */}
         <ScrollReveal>
           <AboutSection 
             settings={settings} 
           />
         </ScrollReveal>
+
+        <ProcessSection onOpenAppointment={() => setIsAppointmentOpen(true)} />
 
         {/* 4. Faixa de Agendamento (Vamos cuidar do seu carro?) */}
         <ScrollReveal>
