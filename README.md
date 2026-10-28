@@ -102,8 +102,15 @@ O projeto possui `vercel.json` pré-configurado com rotas estáticas e serverles
 
 ## Apresentação, fotografias e visualizador 3D
 
-A seção Equipamentos reúne quatro fotografias reais do alinhador Corghi, em WebP e sem corte no enquadramento, com ampliação. O modelo de roda e freio é uma representação ilustrativa; não reproduz um equipamento específico da oficina.
+A seção Equipamentos reúne quatro fotografias reais do alinhador Corghi, em WebP e sem corte no enquadramento, com ampliação.
 
-O Three.js só é carregado após clicar em “Explorar em 3D”. Os controles incluem vistas do conjunto, frontal e separada para inspeção dos freios, rotação opcional, zoom e restauração. A câmera deixa de interpolar quando o usuário começa a arrastar. A renderização pausa fora da tela ou com a aba oculta. Há uma imagem de reserva quando WebGL não está disponível.
+A roda usa o modelo **Tuner car wheel FREE**, de **NLM**, no visualizador oficial do Sketchfab. A prévia local é uma renderização desse mesmo modelo, para evitar trocar uma imagem realista por outra geometria ao abrir o 3D. O modelo tem 80.886 triângulos e materiais/texturas do autor. A incorporação preserva os controles nativos e os créditos do Sketchfab.
 
-Validação local: `npm run build`, `npx tsc --noEmit` e `node --import tsx scripts/check-wheel-model.ts`. O teste de geometria verifica dimensões, coordenadas, banda de rodagem, perfurações e separação dos conjuntos. O navegador remoto utilizado na implementação estava com WebGL desativado: a aparência do modelo e seus controles em movimento ainda precisam de conferência em dispositivo com WebGL.
+Fonte: https://sketchfab.com/3d-models/tuner-car-wheel-free-02c9dc10a6b04b41a562848f95c232eb
+Autor: https://sketchfab.com/NLM-Group
+Licença do modelo e prévia: Creative Commons Attribution 4.0 — https://creativecommons.org/licenses/by/4.0/
+Alterações no ativo: somente conversão da prévia JPEG para WebP; geometria e materiais são apresentados pelo visualizador oficial, sem alteração. O uso não indica vínculo com as marcas representadas.
+
+O SDK e o visualizador só carregam após clicar em “Explorar em 3D”. A imagem local permanece visível até o evento `viewerready`. Em caso de falha ou demora superior a 45 segundos, a imagem permanece disponível, com opção de nova tentativa e link ao modelo original. O parâmetro `dnt=1` é usado. A operação depende da disponibilidade do Sketchfab e de WebGL no dispositivo. Não há mais substituição pelo modelo procedural local.
+
+Validação: `npm run build` e `npx tsc --noEmit`. O navegador remoto de QA não oferece WebGL; a inspeção da renderização em movimento deve ser feita em um navegador com WebGL.
