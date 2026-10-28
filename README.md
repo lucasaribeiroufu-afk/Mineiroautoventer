@@ -56,7 +56,7 @@ Todas as fotos reais estão salvas em `/public/assets/images/` e são exportáve
 ## 🔐 Painel Administrativo da Oficina
 
 - **Acesso**: Ícone no cabeçalho ou rodapé ("Área da Oficina")
-- **Senha Padrão**: `melhoroficina26`
+Configure as credenciais administrativas de forma privada no ambiente do servidor.
 - **Funcionalidades do Painel**:
   - Visualização e alteração de status de agendamentos (`pendente`, `confirmado`, `concluido`, `cancelado`)
   - Remarcação de data e horário
@@ -98,3 +98,12 @@ O projeto possui `vercel.json` pré-configurado com rotas estáticas e serverles
 2. Importe o repositório na [Vercel](https://vercel.com).
 3. A Vercel detectará automaticamente o framework Vite e o arquivo `vercel.json`.
 4. Clique em **Deploy**. O site estará no ar com todas as fotos, agendamento e SEO ativo!
+
+
+## Apresentação, fotografias e visualizador 3D
+
+A seção Equipamentos reúne quatro fotografias reais do alinhador Corghi, em WebP e sem corte no enquadramento, com ampliação. O modelo de roda e freio é uma representação ilustrativa; não reproduz um equipamento específico da oficina.
+
+O Three.js só é carregado após clicar em “Explorar em 3D”. Os controles incluem vistas do conjunto, frontal e separada para inspeção dos freios, rotação opcional, zoom e restauração. A câmera deixa de interpolar quando o usuário começa a arrastar. A renderização pausa fora da tela ou com a aba oculta. Há uma imagem de reserva quando WebGL não está disponível.
+
+Validação local: `npm run build`, `npx tsc --noEmit` e `node --import tsx scripts/check-wheel-model.ts`. O teste de geometria verifica dimensões, coordenadas, banda de rodagem, perfurações e separação dos conjuntos. O navegador remoto utilizado na implementação estava com WebGL desativado: a aparência do modelo e seus controles em movimento ainda precisam de conferência em dispositivo com WebGL.
