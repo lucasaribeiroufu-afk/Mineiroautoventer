@@ -1,44 +1,51 @@
-# Agenda e notificações — auditoria de 28/10/2026
+# Avisos do site e atendimento
 
-## Situação real
+Esta versão usa Web Push, sem depender do WhatsApp para notificar. O WhatsApp continua disponível como contato manual.
 
-O sistema atual registra pedidos de atendimento e consulta disponibilidade no servidor. A situação inicial é `novo`; a confirmação e a remarcação dependem da oficina. O botão WhatsApp abre uma mensagem preenchida: o cliente precisa enviá-la manualmente. Não existe envio automático, webhook de entrada de mensagens, confirmação por WhatsApp nem lembrete de 30 minutos implementado. O guia anterior descrevia integrações que não existem no código e foi substituído por esta auditoria.
+**Estado da rotina:** o envio após eventos está implementado. A ativação da rotina a cada minuto foi bloqueada pela revisão automática e aguarda autorização específica para enviar seu token técnico do Vault ao endpoint do próprio site na Vercel. Enquanto isso, o lembrete com o site fechado não está ativo; a interface informa essa condição.
 
-A disponibilidade do formulário agora falha de forma segura: uma API indisponível não vira uma lista de horários livres. Horários passados são bloqueados no fuso America/Sao_Paulo. Antes de enviar o pedido, o formulário consulta novamente a disponibilidade. Essa checagem não substitui uma transação atômica no banco.
+## No celular do dono
 
-## Bloqueios para uso como agenda definitiva
+1. Abra https://autocentermineiro.vercel.app/#admin e entre com a senha administrativa.
+2. Na agenda, toque em **Ativar notificações** e permita os avisos.
+3. Confirme se o aviso de teste apareceu no aparelho.
+4. Mantenha o painel aberto quando estiver atendendo. Clientes verão a equipe conectada enquanto o painel ativo renovar sua presença; isso não promete resposta imediata.
 
-- O servidor atual grava JSON em /tmp na Vercel. Não há persistência compartilhada garantida entre instâncias ou novas publicações.
-- A validação de capacidade precisa migrar para uma transação no banco para impedir confirmações concorrentes acima da capacidade.
-- O projeto Supabase acessível durante a auditoria está INACTIVE e não foi identificado como pertencente ao Mineiro. Não foi reativado ou modificado.
-- A autenticação administrativa legada contém senhas padrão no código. Antes de centralizar dados reais, remover essas alternativas e usar credenciais privadas ou autenticação com permissões por usuário. Trocar credenciais anteriormente expostas.
-- O número público de contato não comprova que ele esteja cadastrado como remetente de uma API oficial. É necessário confirmar remetente, destinatário do dono e provedor.
+O dono recebe novos pedidos, mudanças, mensagens de clientes dos atendimentos confirmados; os lembretes ainda aguardam ativação da rotina. O botão **Conversar pelo site** abre a conversa de cada pedido; **Cliente aguarda resposta** indica que a última mensagem é do cliente.
 
-## Fluxo proposto para ativação
+## No celular do cliente
 
-1. Disponibilidade: banco persistente com capacidade por horário, expediente, bloqueios e horário de São Paulo.
-2. Pedido: gerar referência única e registrar a autorização do cliente para contatos relacionados ao atendimento.
-3. Oficina: API oficial envia ao número autorizado os dados mínimos do pedido e ações de confirmar ou propor nova data.
-4. Entrada: webhook assinado valida o provedor e a identidade do remetente. Somente o número autorizado da oficina pode aprovar atendimento. O cliente pode aceitar nova proposta, pedir mudança ou cancelar o próprio atendimento.
-5. Confirmação: transação verifica novamente a capacidade e muda o estado. Se não houver vaga, oferecer alternativas disponíveis sem confirmar automaticamente uma vaga inexistente.
-6. Lembretes: criar duas tarefas para o início confirmado menos 30 minutos — uma para o dono, outra para o cliente. Não enviar para pedidos ainda pendentes ou cancelados.
-7. Remarcação: cancelar tarefas antigas e criar novas vinculadas à revisão do agendamento. Verificar novamente a revisão antes de cada envio.
-8. Entrega: guardar identificador do provedor e estados enviado/entregue/falhou. Usar chaves únicas por agendamento, revisão, destinatário e tipo. Não repetir cegamente um envio cujo resultado ficou desconhecido.
+Após agendar, toque em **Acompanhar, conversar ou cancelar**. Guarde o link privado e ative os avisos neste aparelho. O cliente recebe atualizações e mensagens da oficina. Os lembretes de horários confirmados aguardam ativação da rotina.
 
-## Infraestrutura necessária
+O link fica salvo em **Meus agendamentos** no mesmo navegador. Em outro aparelho, abra a cópia do link. Quem possui o link pode consultar e alterar aquele atendimento: não publique nem compartilhe com terceiros. O servidor guarda somente o hash da credencial; não há busca pública por telefone ou identificador.
 
-Banco Supabase/Postgres ativo e confirmado para a oficina; acesso à configuração do projeto Vercel; conta WhatsApp Business Platform (direta ou via provedor oficial, como Twilio); modelos de mensagem aprovados; números autorizados; processamento agendado com frequência de um minuto. SMS é um canal adicional e exige número/provedor compatível e configuração própria; um celular não recebe SMS automaticamente só porque possui WhatsApp.
+## iPhone e iPad
 
-No plano Hobby da Vercel, o cron roda no máximo uma vez por dia e não atende ao lembrete de 30 minutos. Usar um agendador externo compatível ou um plano com execução por minuto. Não foi contratado serviço pago nem ativado envio nesta atualização. A entrega no telefone depende também do provedor, conectividade e permissões do aparelho; não prometer precisão absoluta.
+Em aparelhos compatíveis (iOS/iPadOS 16.4 ou posterior), abra no Safari, use **Compartilhar → Adicionar à Tela de Início** e abra pelo ícone criado antes de ativar as notificações. No Android, use um navegador atualizado e permita notificações. A permissão é individual por aparelho; não pode ser concedida remotamente pela oficina.
 
-## Validação de ponta a ponta antes de anunciar o recurso
+## Agendamento, alteração e cancelamento
 
-Com números de teste autorizados: pedido → alerta do dono → confirmação → retorno ao cliente; pedido sem vaga → alternativa; remarcação → cancelamento dos lembretes antigos; cancelamento → nenhum lembrete; dois pedidos concorrentes para a última vaga; webhook sem assinatura → rejeição; webhook repetido → uma mudança; lembretes para dono e cliente no horário esperado; falha do provedor → registro e tratamento explícito. Nunca usar dados de clientes reais nesses testes sem autorização.
+Pedidos novos e pedidos de reagendamento ficam aguardando confirmação. O cliente escolhe outro horário consultando a disponibilidade; a oficina precisa confirmar o novo horário. Cancelamento de atendimento futuro pede confirmação na tela e invalida os lembretes pendentes. Atendimentos cancelados/concluídos não aceitam novas mensagens. Para atendimentos passados, o cliente deve falar com a oficina.
 
-## Referências oficiais
+Vagas são verificadas de forma transacional no Supabase. Revisões evitam que uma tela antiga sobrescreva uma alteração recente. Solicitações e mensagens têm identificação idempotente para não duplicar em uma repetição do mesmo envio.
 
-- https://vercel.com/docs/functions/runtimes
-- https://vercel.com/docs/cron-jobs/usage-and-pricing
-- https://www.twilio.com/docs/whatsapp/key-concepts
-- https://www.twilio.com/docs/usage/webhooks/webhooks-security
-- https://www.twilio.com/docs/messaging/features/message-scheduling
+## Entrega dos avisos
+
+O lembrete é preparado para 30 minutos antes do horário confirmado, para dono e cliente inscritos. Após autorização específica, a rotina executará a cada minuto no Supabase e chamará o servidor autenticado na Vercel. Enquanto a configuração scheduler_enabled estiver falsa, o worker não materializa lembretes para envio. A entrega e a exibição dependem da conexão, permissões, suporte do navegador, foco/economia de bateria e serviços de push do aparelho. Não se promete exibição no segundo exato nem confirmação de leitura. Atendimentos confirmados com menos de 30 minutos de antecedência não geram lembrete retroativo.
+
+A fila registra aceite do serviço de push, falhas, tentativas e cancelamentos. Aceite pelo provedor não comprova que a pessoa viu a notificação. Tentativas são limitadas; endpoints expirados são desativados. Revisões são conferidas antes de enviar lembretes. Um aviso já em trânsito pode chegar após uma alteração: por isso seu conteúdo orienta consultar o horário atual no site.
+
+As notificações não incluem nome, telefone, veículo, link privado ou conteúdo das mensagens. Somente o navegador destinatário recebe o conteúdo criptografado. A lista de aparelhos e as chaves privadas não são acessíveis por usuários públicos.
+
+## Operação
+
+- Cron: `mineiro-push-every-minute`.
+- Endpoint: `POST /api/push/dispatch`, autenticado por token interno guardado no Vault.
+- Chaves VAPID: configuração privada no banco, com acesso apenas pelo servidor. Não são armazenadas no GitHub ou no navegador, exceto a chave pública.
+- Não rotacione VAPID sem planejar reinscrição dos aparelhos.
+- Conversa e painel consultam atualizações a cada 8 segundos enquanto visíveis; não dependem do SSE em memória de uma instância da Vercel.
+- A caixa de mensagens não é um atendimento automatizado por IA nem uma promessa de funcionamento 24 horas.
+
+## Verificação
+
+Testes SQL: `supabase/tests/portal.sql` (transação com rollback). Testes do servidor: `node --import tsx scripts/check-portal-push.ts`. Os testes de envio usam mock e não enviam avisos a pessoas. A entrega final precisa ser confirmada no celular após a ativação.

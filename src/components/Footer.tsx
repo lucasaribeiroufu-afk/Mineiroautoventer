@@ -55,6 +55,7 @@ export const Footer: React.FC<FooterProps> = ({
               Navegação
             </h4>
             <ul className="space-y-2">
+              <li><a href="#meus-agendamentos" className="text-blue-300 hover:text-white transition-colors">Meus agendamentos</a></li>
               <li>
                 <a href="#inicio" className="hover:text-white transition-colors">
                   Início

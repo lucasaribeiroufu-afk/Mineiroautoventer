@@ -22,20 +22,24 @@ export const requireAdminAuth: express.RequestHandler = (req, res, next) => {
   next();
 };
 
-class ScheduleError extends Error {
+export class ScheduleError extends Error {
   constructor(public status: number, message: string) { super(message); }
 }
 
 export async function scheduleOperation(action: string, payload: unknown = {}, id: string | null = null) {
+  return databaseRpc('workshop_schedule', { p_action: action, p_payload: payload, p_id: id });
+}
+
+export async function databaseRpc(name: string, args: Record<string, unknown>) {
   const key = process.env.SUPABASE_SECRET_KEY;
   if (!key) throw new ScheduleError(503, 'Agenda temporariamente indisponível. Entre em contato pelo WhatsApp.');
-  const url = new URL('/rest/v1/rpc/workshop_schedule', process.env.SUPABASE_URL || DEFAULT_URL);
+  const url = new URL('/rest/v1/rpc/' + name, process.env.SUPABASE_URL || DEFAULT_URL);
   let response: Response;
   try {
     response = await fetch(url, {
       method: 'POST',
       headers: { apikey: key, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ p_action: action, p_payload: payload, p_id: id }),
+      body: JSON.stringify(args),
       signal: AbortSignal.timeout(15000),
     });
   } catch {
@@ -44,15 +48,15 @@ export async function scheduleOperation(action: string, payload: unknown = {}, i
   }
   const data = await response.json().catch(() => null);
   if (!response.ok) {
-    const status = data?.code === 'P0002' ? 404 : data?.code === 'P0003' ? 409 : data?.code === 'P0001' || String(data?.code).startsWith('22') ? 400 : 503;
-    throw new ScheduleError(status, status === 400 || status === 404 || status === 409 ? data.message : 'Agenda temporariamente indisponível.');
+    const status = data?.code === 'P0002' ? 404 : data?.code === 'P0003' ? 409 : data?.code === 'P0004' ? 429 : data?.code === 'P0001' || String(data?.code).startsWith('22') ? 400 : 503;
+    throw new ScheduleError(status, ['P0001','P0002','P0003','P0004'].includes(data?.code) ? data.message : status === 400 ? 'Dados ou data inválidos.' : 'Agenda temporariamente indisponível.');
   }
   if (data === null) throw new ScheduleError(503, 'Resposta inválida da agenda.');
   return data;
 }
 
 type Broadcast = (type: string, payload: unknown) => void;
-export function schedulingRouter(broadcast: Broadcast) {
+export function schedulingRouter(broadcast: Broadcast, notify: () => Promise<void> = async () => {}) {
   const router = express.Router();
   const route = (fn: (req: express.Request, res: express.Response) => Promise<unknown>): express.RequestHandler => async (req, res) => {
     res.setHeader('Cache-Control', 'no-store');
@@ -81,6 +85,7 @@ export function schedulingRouter(broadcast: Broadcast) {
   }));
   router.patch('/api/admin/appointments/:id', requireAdminAuth, route(async (req, res) => {
     const item = await scheduleOperation('update', req.body, String(req.params.id));
+    await notify();
     // Both the original and replacement slot may have changed.
     broadcast('schedule_changed', {});
     res.json(item);

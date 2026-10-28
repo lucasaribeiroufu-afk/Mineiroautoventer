@@ -1,3 +1,5 @@
+import { createClientToken, rememberBooking } from '../services/customerPortal';
+import { PushSettings } from './PushSettings';
 import React, { useState, useEffect } from 'react';
 import { CompanySettings, ServiceItem, AppointmentRequest, ScheduleAvailability } from '../types';
 import { StorageService, OFFICIAL_WHATSAPP_PHONE } from '../services/storage';
@@ -19,6 +21,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
   services,
   onOpenPrivacyPolicy,
 }) => {
+  const [clientToken, setClientToken] = useState(createClientToken);
   const getTomorrowString = () => workshopTomorrow();
 
   const [formData, setFormData] = useState({
@@ -76,16 +79,15 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
   useEffect(() => {
     if (!isOpen) return;
 
-    const unsubscribe = StorageService.subscribeToScheduleEvents(event => {
+    const refresh = () => {
+      if (document.hidden) return;
       // Refresh availability if an appointment was created/updated or config changed
       if (formData.preferredDate) {
         fetchVerifiedAvailability(formData.preferredDate).then(result => { setAvailability(result); setAvailabilityError(null); }).catch(() => { setAvailability(null); setAvailabilityError('A consulta à agenda foi interrompida. Tente outra data ou consulte a equipe.'); });
       }
-    });
-
-    return () => {
-      unsubscribe();
     };
+    const timer = window.setInterval(refresh, 20000);
+    return () => window.clearInterval(timer);
   }, [isOpen, formData.preferredDate]);
 
   if (!isOpen) return null;
@@ -144,8 +146,10 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
         preferredTime: formData.preferredTime,
         notes: formData.notes.trim(),
         source: 'site',
+        clientToken,
       });
 
+      rememberBooking(created);
       setSubmittedApt(created);
     } catch (err: any) {
       setServerError(err.message || 'Erro ao registrar agendamento no servidor.');
@@ -180,6 +184,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
 
   const handleResetAndClose = () => {
     setSubmittedApt(null);
+    setClientToken(createClientToken());
     setServerError(null);
     setFormData({
       name: '',
@@ -471,11 +476,17 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                 Agendamento sujeito à confirmação da oficina.
               </p>
               <p className="text-xs text-slate-400">
-                Solicitação recebida. O envio da mensagem pelo WhatsApp é manual: toque no botão abaixo e envie a mensagem no aplicativo. A oficina ainda precisa confirmar o atendimento.
+                Acompanhe o pedido, envie mensagens à oficina e solicite alterações pelo site. O WhatsApp continua disponível como outra opção de contato.
               </p>
             </div>
 
             <div className="space-y-3 pt-2">
+              {submittedApt.clientToken && <>
+                <button className="w-full py-3.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm" onClick={() => { const token = submittedApt.clientToken; handleResetAndClose(); window.location.hash = 'agendamento=' + token; }}>Acompanhar, conversar ou cancelar</button>
+                <p className="text-xs text-slate-400">Seu link privado foi salvo neste aparelho em “Meus agendamentos”. Guarde uma cópia para acessar em outro aparelho.</p>
+                <PushSettings token={submittedApt.clientToken}/>
+              </>}
+
               <button
                 onClick={handleOpenWhatsAppContinuar}
                 className="w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold text-sm transition-all shadow-md flex items-center justify-center gap-2"

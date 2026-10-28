@@ -59,6 +59,8 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({
               <li><strong>WhatsApp / Telefone:</strong> exclusivamente para responder ao orçamento e confirmar a data de agendamento.</li>
               <li><strong>Marca, modelo e ano do veículo:</strong> para consultar especificações de peças, tipo de óleo e ferramentas necessárias.</li>
               <li><strong>Descrição da necessidade:</strong> para preparar previamente a equipe técnica.</li>
+              <li><strong>Mensagens do atendimento:</strong> para conversar com a oficina e acompanhar alterações.</li>
+              <li><strong>Inscrição de notificações do navegador:</strong> somente quando você ativa os avisos, para enviar atualizações e lembretes ao aparelho.</li>
             </ul>
             <p className="text-slate-400">
               * Não solicitamos placas, número de Renavam, CPF ou dados bancários em nossos formulários públicos.
@@ -81,7 +83,7 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({
               3. Armazenamento e Não Compartilhamento
             </h3>
             <p>
-              Seus dados não são vendidos, alugados ou compartilhados com ferramentas de publicidade de terceiros. O painel administrativo da oficina é protegido por controle de acesso e restrito à equipe operacional responsável pelos agendamentos.
+              Seus dados não são vendidos, alugados ou compartilhados com ferramentas de publicidade de terceiros. A agenda e as mensagens são armazenadas no serviço de banco de dados usado pela oficina, com acesso restrito. Notificações autorizadas passam pelo serviço de push do navegador; os avisos não exibem nome, telefone, veículo nem conteúdo da conversa. O link privado permite acessar e alterar o atendimento: guarde-o com segurança. Você pode desativar os avisos neste site ou nas configurações do navegador.
             </p>
           </section>
 

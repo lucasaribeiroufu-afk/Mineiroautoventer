@@ -1,3 +1,4 @@
+import { CustomerPortal } from './components/CustomerPortal';
 import { WorkshopManifesto, CareScenarios, TechnologyStory, FAQSection, FinalContact } from './components/ModernSections';
 import { useState, useEffect } from 'react';
 import { CompanySettings, ServiceItem } from './types';
@@ -72,9 +73,12 @@ export default function App() {
   const [isAppointmentOpen, setIsAppointmentOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(() => window.location.hash === '#admin');
+  const [customerHash, setCustomerHash] = useState(() => window.location.hash);
+  const customerMatch = customerHash.match(/^#agendamento=([A-Za-z0-9_-]{43})$/);
+  const customerOpen = customerHash === '#meus-agendamentos' || !!customerMatch;
 
   useEffect(() => {
-    const syncAdminHash = () => setIsAdminOpen(window.location.hash === '#admin');
+    const syncAdminHash = () => { setIsAdminOpen(window.location.hash === '#admin'); setCustomerHash(window.location.hash); };
     window.addEventListener('hashchange', syncAdminHash);
     return () => window.removeEventListener('hashchange', syncAdminHash);
   }, []);
@@ -252,6 +256,7 @@ export default function App() {
         settings={settings}
       />
 
+      {customerOpen && <CustomerPortal key={customerMatch?.[1] || 'list'} token={customerMatch?.[1]} onClose={() => { window.history.replaceState(null, '', window.location.pathname + window.location.search); setCustomerHash(''); }}/>}
       {/* Painel Administrativo com Acesso Protegido */}
       <AdminDashboard
         isOpen={isAdminOpen}

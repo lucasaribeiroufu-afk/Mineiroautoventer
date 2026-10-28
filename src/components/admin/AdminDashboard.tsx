@@ -1,3 +1,6 @@
+import { PushSettings } from '../PushSettings';
+import { Conversation } from '../CustomerPortal';
+import { portalRequest } from '../../services/customerPortal';
 import React, { useState, useEffect } from 'react';
 import { 
   AppointmentRequest, 
@@ -61,6 +64,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   // Appointments from server
   const [appointments, setAppointments] = useState<AppointmentRequest[]>([]);
+  const [threadId, setThreadId] = useState<string | null>(null);
+  const [liveError, setLiveError] = useState('');
   const [loadingAppointments, setLoadingAppointments] = useState(false);
   const [searchFilter, setSearchFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('todos');
@@ -244,14 +249,21 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     if (isOpen && isAuthenticated) {
       loadAllData();
 
-      // Listen to real-time events
-      const unsubscribe = StorageService.subscribeToScheduleEvents(event => {
-        loadAllData();
-      });
-
-      return () => {
-        unsubscribe();
+      let active = true, running = false;
+      const refresh = async () => {
+        if (document.hidden || running) return;
+        running = true;
+        try {
+          const [list] = await Promise.all([StorageService.fetchAdminAppointments(), portalRequest('/api/admin/presence', undefined, {}, 'POST', StorageService.getAdminPassword())]);
+          if (active) { setAppointments(list); setLiveError(''); }
+        } catch (error: any) { if (active) setLiveError(error.message || 'Conexão interrompida. Atualize antes de confirmar horários.'); }
+        finally { running = false; }
       };
+      refresh();
+      const timer = window.setInterval(refresh, 8000);
+      const wake = () => { if (!document.hidden) refresh(); };
+      document.addEventListener('visibilitychange', wake);
+      return () => { active = false; window.clearInterval(timer); document.removeEventListener('visibilitychange', wake); };
     }
   }, [isOpen, isAuthenticated]);
 
@@ -277,8 +289,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   // Appointment Actions
   const handleUpdateStatus = async (id: string, status: AppointmentRequest['status']) => {
     try {
-      await StorageService.updateAppointmentStatus(id, { status });
-      setAppointments(prev => prev.map(a => a.id === id ? { ...a, status } : a));
+      const updated = await StorageService.updateAppointmentStatus(id, { status, revision: appointments.find(a => a.id === id)?.revision });
+      setAppointments(prev => prev.map(a => a.id === id ? updated : a));
       showToast(`Status atualizado para "${status}".`);
     } catch (err: any) {
       showToast(err.message || 'Erro ao atualizar agendamento');
@@ -288,17 +300,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleConfirmReschedule = async () => {
     if (!reschedulingApt) return;
     try {
-      await StorageService.updateAppointmentStatus(reschedulingApt.id, {
+      const updated = await StorageService.updateAppointmentStatus(reschedulingApt.id, {
+        revision: reschedulingApt.revision,
         preferredDate: rescheduleDate,
         preferredTime: rescheduleTime,
         status: 'remarcado',
       });
-      setAppointments(prev => prev.map(a => a.id === reschedulingApt.id ? {
-        ...a,
-        preferredDate: rescheduleDate,
-        preferredTime: rescheduleTime,
-        status: 'remarcado',
-      } : a));
+      setAppointments(prev => prev.map(a => a.id === reschedulingApt.id ? updated : a));
       setReschedulingApt(null);
       showToast('Agendamento remarcado com sucesso.');
     } catch (err: any) {
@@ -712,6 +720,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             {/* TAB CONTENT: APPOINTMENTS */}
             {activeTab === 'appointments' && (
               <div className="flex-1 flex flex-col min-h-0 pt-3">
+                <PushSettings password={StorageService.getAdminPassword()}/>
+                <p className="text-[11px] text-slate-400 mb-2">Agenda com atualização automática. As respostas aos clientes são enviadas pela conversa de cada atendimento.</p>
+                {liveError && <p role="alert" className="portal-error">{liveError}</p>}
                 {/* Actions bar */}
                 <div className="flex flex-col sm:flex-row gap-2 justify-between mb-3 shrink-0">
                   <div className="flex items-center gap-2 flex-1">
@@ -775,6 +786,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                           <div>
                             <div className="flex items-center gap-2">
                               <span className="font-bold text-white text-sm">{apt.clientName}</span>
+                              {apt.awaitingReply && !['cancelado','concluido'].includes(apt.status) && <span className="text-[10px] text-amber-200 bg-amber-950 px-2 py-1 rounded">Cliente aguarda resposta</span>}
                               <span className="text-[10px] text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
                                 {apt.id}
                               </span>
@@ -821,8 +833,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         </div>
 
                         {/* Action buttons */}
+                        {threadId === apt.id && <div className="portal-owner-thread"><Conversation ownerId={apt.id} appointmentStatus={apt.status} ownerPassword={StorageService.getAdminPassword()}/></div>}
                         <div className="pt-2 flex flex-wrap items-center gap-2 border-t border-slate-900/80">
-                          {apt.status !== 'confirmado' && (
+                          <button onClick={() => setThreadId(threadId === apt.id ? null : apt.id)} className="px-2.5 py-1 rounded bg-blue-950 text-blue-300 border border-blue-800 text-[11px] font-semibold">{threadId === apt.id ? 'Fechar conversa' : 'Conversar pelo site'}</button>
+                          {!['confirmado','cancelado','concluido'].includes(apt.status) && (
                             <button
                               onClick={() => handleUpdateStatus(apt.id, 'confirmado')}
                               className="px-2.5 py-1 rounded bg-emerald-950 text-emerald-400 hover:bg-emerald-900 border border-emerald-800 text-[11px] font-semibold"

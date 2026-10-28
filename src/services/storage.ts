@@ -262,6 +262,7 @@ export class StorageService {
     preferredTime: string;
     notes?: string;
     source?: 'site' | 'whatsapp_manual';
+    clientToken?: string;
   }): Promise<AppointmentRequest> {
     const res = await fetch('/api/schedule/appointments', {
       method: 'POST',
@@ -348,27 +349,17 @@ export class StorageService {
 
   static async fetchAdminAppointments(): Promise<AppointmentRequest[]> {
     const password = this.getAdminPassword();
-    try {
-      const res = await fetch('/api/admin/appointments', {
-        headers: { 'x-admin-password': password },
-      });
-      if (res.ok) {
-        const list = await res.json();
-        localStorage.setItem(STORAGE_KEYS.APPOINTMENTS_CACHE, JSON.stringify(list));
-        return list;
-      }
-    } catch (e) {
-      console.warn('Erro ao carregar agendamentos do servidor:', e);
-    }
-    // Fallback cache
-    const cached = localStorage.getItem(STORAGE_KEYS.APPOINTMENTS_CACHE);
-    return cached ? JSON.parse(cached) : [];
+    const res = await fetch('/api/admin/appointments', { headers: { 'x-admin-password': password }, cache: 'no-store', signal: AbortSignal.timeout(12000) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Não foi possível consultar a agenda.');
+    return data;
   }
 
   static async updateAppointmentStatus(
     id: string, 
     updates: { 
-      status?: AppointmentRequest['status']; 
+      status?: AppointmentRequest['status'];
+      revision?: number;
       preferredDate?: string; 
       preferredTime?: string; 
       internalNotes?: string 

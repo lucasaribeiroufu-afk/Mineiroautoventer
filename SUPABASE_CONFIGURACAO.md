@@ -4,7 +4,7 @@ Projeto existente: Auto center mineiro (`ehqxcwppzrjssbjkqflu`), organização S
 
 ## Estado
 
-O banco está configurado. A troca do backend está preparada nesta alteração e depende de variáveis na Vercel antes da publicação. WhatsApp, SMS, confirmação por mensagem e envio de lembretes ainda não estão ativos.
+A agenda já usa o Supabase. O portal privado, as conversas e o Web Push usam as mesmas credenciais do servidor na Vercel. Consulte NOTIFICACOES_GUIA.md para ativação nos aparelhos e operação da fila. WhatsApp e SMS continuam sem envio automático.
 
 As tabelas `workshop_schedule_config`, `workshop_appointments` e `workshop_notification_jobs` têm RLS e não permitem acesso por anon/authenticated. A função `workshop_schedule` é SECURITY INVOKER, executável somente pelo service_role. O aviso informativo “RLS Enabled No Policy” é esperado: clientes não acessam essas tabelas diretamente.
 
@@ -27,15 +27,15 @@ Depois de cadastrar as variáveis, publique esta alteração e faça Redeploy. A
 - Solicitações entram como novo e dependem de confirmação da oficina.
 - Confirmado/remarcado ocupam vagas. Confirmações e reagendamentos são serializados no banco, inclusive entre instâncias distintas.
 - Datas e horários usam America/Sao_Paulo e não aceitam novos atendimentos no passado.
-- Cada confirmação futura com antecedência superior a 30 minutos gera dois registros de lembrete, cliente e dono, com horário de execução 30 minutos antes. Eles ficam BLOCKED: nenhum envio foi ativado.
+- Cada confirmação futura com antecedência superior a 30 minutos gera dois registros de lembrete, cliente e dono, com horário de execução 30 minutos antes. O worker de Web Push materializa entregas por aparelho inscrito; sem inscrição ativa, não há destinatário para enviar o aviso.
 - Reagendamento/cancelamento invalida os lembretes anteriores. Revisões impedem confundir o horário antigo com o atual.
 - Não há envio imediato para agendamentos feitos com menos de 30 minutos de antecedência. Essa regra deve ser definida ao integrar o provedor.
 - A notificação SSE é apenas uma atualização da tela aberta; não substitui lembrete no celular.
 - Fotos e dicas do painel ainda usam arquivos; a migração desta alteração abrange a agenda.
 
-## Antes de ativar mensagens
+## Canais de notificação
 
-Conectar um provedor oficial, configurar remetente e templates, confirmar o telefone do dono e obter autorização para mensagens dos clientes. Implementar webhook autenticado para confirmação/reagendamento e um worker periódico com claim atômico, tentativas controladas e verificação da revisão antes do envio. Não habilitar os jobs apenas mudando seu status: ainda não existe worker de envio.
+Para Web Push, o worker está implementado; a rotina de lembretes a cada minuto aguarda autorização específica e não está ativa. Cada pessoa deve ativar os avisos de eventos no próprio aparelho. Para adicionar WhatsApp ou SMS futuramente, ainda será necessário contratar/configurar um provedor oficial. Não alterar manualmente os estados da fila para simular entrega.
 
 ## Dados antigos e validação
 

@@ -26,6 +26,10 @@ export interface QuoteRequest {
 }
 
 export interface AppointmentRequest {
+  clientToken?: string;
+  revision?: number;
+  awaitingReply?: boolean;
+  lastMessageAt?: string;
   id: string;
   clientName: string;
   whatsapp: string;

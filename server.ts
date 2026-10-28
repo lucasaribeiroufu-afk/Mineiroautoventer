@@ -1,4 +1,6 @@
 import 'dotenv/config';
+import { portalRouter } from './server/portal.js';
+import { flushPushSafely } from './server/push.js';
 import { schedulingRouter, requireAdminAuth } from './server/scheduling.js';
 import express from 'express';
 import path from 'path';
@@ -88,7 +90,8 @@ app.get(['/api/schedule/events', '/api/events'], (req, res) => {
 });
 
 // Scheduling is persisted in Supabase; no JSON or temporary-file fallback.
-app.use(schedulingRouter(broadcastEvent));
+app.use(portalRouter());
+app.use(schedulingRouter(broadcastEvent, flushPushSafely));
 
 // ==================== WORKSHOP PHOTOS MANAGEMENT ====================
 
