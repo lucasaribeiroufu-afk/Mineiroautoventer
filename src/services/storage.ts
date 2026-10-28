@@ -1,3 +1,4 @@
+import { fetchVerifiedAvailability } from './bookingAvailability';
 import {
   CompanySettings,
   ServiceItem,
@@ -132,7 +133,7 @@ export const DEFAULT_COMPANY_SETTINGS: CompanySettings = {
     tarde: 4,
   },
   unavailableDates: [],
-  adminPassword: 'melhoroficina26',
+  adminPassword: '',
   workshopPhotos: {
     heroFacade: null,
     clientKey: null,
@@ -245,30 +246,7 @@ export class StorageService {
    * Valida capacidade e bloqueios configurados no backend.
    */
   static async fetchAvailability(date: string): Promise<ScheduleAvailability> {
-    try {
-      const res = await fetch(`/api/schedule/availability?date=${encodeURIComponent(date)}`);
-      if (res.ok) {
-        return await res.json();
-      }
-      const errData = await res.json().catch(() => ({}));
-      throw new Error(errData.error || 'Erro ao carregar disponibilidade no servidor');
-    } catch (err: any) {
-      console.warn('Falha na API de disponibilidade:', err.message);
-      // Fallback local se servidor indisponível
-      const slots = ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00'].map(time => ({
-        time,
-        available: true,
-        capacity: 3,
-        bookedCount: 0,
-        blocked: false,
-      }));
-      return {
-        date,
-        isOpen: true,
-        defaultCapacityPerSlot: 3,
-        slots,
-      };
-    }
+    return fetchVerifiedAvailability(date);
   }
 
   /**

@@ -1,0 +1,60 @@
+import assert from 'node:assert/strict';
+import express from 'express';
+import { schedulingRouter } from '../server/scheduling';
+
+const originalFetch = globalThis.fetch;
+const savedKey = process.env.SUPABASE_SECRET_KEY;
+const savedPassword = process.env.ADMIN_PASSWORD;
+delete process.env.SUPABASE_SECRET_KEY;
+delete process.env.ADMIN_PASSWORD;
+let calls = 0;
+let mode = 'ok';
+const events: unknown[] = [];
+globalThis.fetch = async (url, init) => {
+  if (!String(url).includes('/rest/v1/rpc/')) return originalFetch(url, init);
+  calls++;
+  assert.equal(new Headers(init?.headers).get('apikey'), 'test-server-key');
+  if (mode === 'timeout') throw new Error('Network unavailable');
+  if (mode === 'full') return Response.json({ code: 'P0003', message: 'Capacidade máxima atingida.' }, { status: 400 });
+  const body = JSON.parse(String(init?.body));
+  assert.equal(body.p_action, 'create');
+  return Response.json({ id: 'AGD-test', preferredDate: '2030-01-07', preferredTime: '08:00', status: 'novo' });
+};
+const app = express();
+app.use(express.json());
+app.use(schedulingRouter((...event) => events.push(event)));
+const server = app.listen(0, '127.0.0.1');
+await new Promise<void>(resolve => server.once('listening', resolve));
+const address = server.address();
+assert(address && typeof address !== 'string');
+const base = 'http://127.0.0.1:' + address.port;
+const post = (path: string, body = {}) => fetch(base + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+try {
+  assert.equal((await post('/api/schedule/appointments')).status, 503);
+  assert.equal(calls, 0);
+  assert.equal((await post('/api/admin/login', { password: 'admin' })).status, 503);
+  process.env.ADMIN_PASSWORD = 'test-password-only-123';
+  assert.equal((await post('/api/admin/login', { password: 'admin' })).status, 401);
+  assert.equal((await post('/api/admin/login', { password: process.env.ADMIN_PASSWORD })).status, 200);
+  assert.equal((await fetch(base + '/api/admin/appointments')).status, 401);
+  process.env.SUPABASE_SECRET_KEY = 'test-server-key';
+  let response = await post('/api/schedule/appointments');
+  assert.equal(response.status, 201);
+  assert.equal((await response.json()).status, 'novo');
+  assert.equal(events.length, 1);
+  assert(!JSON.stringify(events).includes('test-server-key'));
+  mode = 'full';
+  assert.equal((await post('/api/schedule/appointments')).status, 409);
+  mode = 'timeout';
+  const before = calls;
+  assert.equal((await post('/api/schedule/appointments')).status, 503);
+  assert.equal(calls, before + 1, 'A mutation must never retry automatically');
+  assert.equal(events.length, 1, 'Failed writes must not broadcast success');
+  console.log('PASS: missing credentials, authentication, persistence response, conflict, timeout and no retry');
+} finally {
+  globalThis.fetch = originalFetch;
+  if (savedKey === undefined) delete process.env.SUPABASE_SECRET_KEY; else process.env.SUPABASE_SECRET_KEY = savedKey;
+  if (savedPassword === undefined) delete process.env.ADMIN_PASSWORD; else process.env.ADMIN_PASSWORD = savedPassword;
+  server.closeAllConnections();
+  await new Promise<void>(resolve => server.close(() => resolve()));
+}
