@@ -131,10 +131,10 @@ export const Footer: React.FC<FooterProps> = ({
               </button>
               <button
                 onClick={onOpenAdmin}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-colors mt-2 text-xs font-semibold"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 border border-blue-500 text-white transition-colors mt-2 text-xs font-semibold"
               >
                 <Lock className="w-3.5 h-3.5 text-blue-400" />
-                <span>Painel da Oficina (Fotos & Gestão)</span>
+                <span>Área Restrita — Painel da Oficina</span>
               </button>
             </div>
           </div>

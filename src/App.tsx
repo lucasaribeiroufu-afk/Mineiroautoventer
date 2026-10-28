@@ -71,7 +71,24 @@ export default function App() {
   const [isQuoteOpen, setIsQuoteOpen] = useState(false);
   const [isAppointmentOpen, setIsAppointmentOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
-  const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [isAdminOpen, setIsAdminOpen] = useState(() => window.location.hash === '#admin');
+
+  useEffect(() => {
+    const syncAdminHash = () => setIsAdminOpen(window.location.hash === '#admin');
+    window.addEventListener('hashchange', syncAdminHash);
+    return () => window.removeEventListener('hashchange', syncAdminHash);
+  }, []);
+
+  const openAdmin = () => {
+    window.location.hash = 'admin';
+    setIsAdminOpen(true);
+  };
+  const closeAdmin = () => {
+    setIsAdminOpen(false);
+    if (window.location.hash === '#admin') {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+  };
   const [preSelectedService, setPreSelectedService] = useState<ServiceItem | null>(null);
 
   const handleOpenQuoteWithService = (service: ServiceItem) => {
@@ -113,7 +130,7 @@ export default function App() {
       <Navbar
         onOpenQuote={handleOpenQuoteGeneral}
         onOpenAppointment={() => setIsAppointmentOpen(true)}
-        onOpenAdmin={() => setIsAdminOpen(true)}
+        onOpenAdmin={openAdmin}
       />
 
       {/* Main Content */}
@@ -123,7 +140,7 @@ export default function App() {
           settings={settings}
           onOpenQuote={handleOpenQuoteGeneral}
           onOpenAppointment={() => setIsAppointmentOpen(true)}
-          onOpenAdmin={() => setIsAdminOpen(true)}
+          onOpenAdmin={openAdmin}
         />
 
         <WorkshopManifesto onOpenQuote={handleOpenQuoteGeneral} />
@@ -193,7 +210,7 @@ export default function App() {
       <Footer
         settings={settings}
         onOpenPrivacy={() => setIsPrivacyOpen(true)}
-        onOpenAdmin={() => setIsAdminOpen(true)}
+        onOpenAdmin={openAdmin}
         onOpenAppointment={() => setIsAppointmentOpen(true)}
       />
 
@@ -238,8 +255,8 @@ export default function App() {
       {/* Painel Administrativo com Acesso Protegido */}
       <AdminDashboard
         isOpen={isAdminOpen}
-        onClose={() => setIsAdminOpen(false)}
-        initialTab="photos"
+        onClose={closeAdmin}
+        initialTab="appointments"
       />
     </div>
   );
