@@ -603,35 +603,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </p>
             </div>
 
-            {/* Password banner with quick fill */}
-            <div className="p-3 bg-blue-950/40 border border-blue-800/60 rounded-xl text-left text-xs space-y-1.5">
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-blue-300 flex items-center gap-1.5">
-                  <Key className="w-3.5 h-3.5" /> Senha da Oficina:
-                </span>
-                <span className="text-[10px] text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800 font-medium">
-                  Ativa no sistema
-                </span>
-              </div>
-              <div className="flex items-center justify-between font-mono bg-slate-900/90 px-3 py-2 rounded-lg border border-slate-800 text-xs">
-                <span className="text-emerald-400 font-bold select-all tracking-wider">melhoroficina26</span>
-                <button
-                  type="button"
-                  onClick={() => setPasswordInput('melhoroficina26')}
-                  className="text-[11px] text-blue-400 hover:text-blue-300 underline font-sans font-medium"
-                >
-                  Preencher
-                </button>
-              </div>
-            </div>
-
             <form onSubmit={handleLogin} className="space-y-3 pt-1">
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={passwordInput}
                   onChange={e => setPasswordInput(e.target.value)}
-                  placeholder="Digite a senha (melhoroficina26)"
+                  placeholder="Digite a senha administrativa"
                   autoFocus
                   className="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
                 />
