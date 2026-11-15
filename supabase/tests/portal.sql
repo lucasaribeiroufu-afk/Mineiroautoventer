@@ -35,10 +35,10 @@ begin
  insert into public.workshop_push_subscriptions(appointment_id,recipient_role,endpoint_hash,subscription)
   values(first->>'id','client','test-client','{"endpoint":"https://fcm.googleapis.com/test","keys":{}}') returning id into client_sub;
  item=public.workshop_schedule('update','{"status":"confirmado"}',first->>'id');
- if (select count(*) from public.workshop_push_queue where appointment_id=first->>'id' and kind='status')<>2 then raise exception 'Status notification pair missing'; end if;
+ if (select count(*) from public.workshop_push_queue where appointment_id=first->>'id' and kind='status' and subscription_id=client_sub)<>1 or exists(select from public.workshop_push_queue where appointment_id=first->>'id' and kind='status' and subscription_id=owner_sub) then raise exception 'Owner must not receive own status edits'; end if;
  update public.workshop_notification_jobs set due_at=now()-interval '1 second' where appointment_id=first->>'id' and status='blocked';
  jobs=public.workshop_push_worker('claim');
- if (select count(*) from public.workshop_push_queue where appointment_id=first->>'id' and kind='reminder')<>2 then raise exception 'Reminder pair missing'; end if;
+ if (select count(*) from public.workshop_push_queue where appointment_id=first->>'id' and kind='reminder' and subscription_id=owner_sub)<>1 or exists(select from public.workshop_push_queue where appointment_id=first->>'id' and kind='reminder' and subscription_id=client_sub) then raise exception 'Reminders must only target owner devices'; end if;
  state=public.workshop_portal('get','{}',repeat('a',64));
  perform public.workshop_portal('change',jsonb_build_object('action','reschedule','revision',state->'revision','date','2030-01-08','time','10:00'),repeat('a',64));
  state=public.workshop_portal('get','{}',repeat('a',64));
