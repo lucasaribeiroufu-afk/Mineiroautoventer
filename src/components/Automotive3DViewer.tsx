@@ -40,10 +40,10 @@ export const Automotive3DViewer: React.FC<Automotive3DViewerProps> = ({ onOpenQu
   }, [attempt, showImage]);
 
   return <div className="realistic-wheel-viewer">
-    <div className="realistic-wheel-stage" aria-busy={status === 'loading' && !showImage}>
+    <div className="realistic-wheel-stage" aria-label="Explore a roda: arraste para girar e use o gesto de pinça para ampliar" aria-busy={status === 'loading' && !showImage}>
       <iframe key={attempt} ref={frame} title="Roda e pneu realistas em 3D — gire e amplie" className={status === 'ready' && !showImage ? 'is-ready' : ''} allow="autoplay; fullscreen" allowFullScreen />
-      {(status !== 'ready' || showImage) && <div className="realistic-wheel-poster"><img src={REALISTIC_WHEEL.poster} alt="Renderização do mesmo modelo 3D de roda e pneu que será aberto no visualizador" width="1920" height="1080" />
-        {!showImage && <div className="realistic-wheel-status" role="status">{status === 'loading' ? 'Carregando a roda com todas as texturas…' : 'O 3D não carregou neste navegador. A imagem permanece disponível.'}</div>}
+      {<div className={'realistic-wheel-poster' + (status === 'ready' && !showImage ? ' is-hidden' : '')} aria-hidden={status === 'ready' && !showImage}><img loading="eager" decoding="async" src={REALISTIC_WHEEL.poster} alt="Renderização do mesmo modelo 3D de roda e pneu que será aberto no visualizador" width="1920" height="1080" />
+        {!showImage && status !== 'ready' && <div className="realistic-wheel-status" role="status">{status === 'loading' ? 'Carregando a roda com todas as texturas…' : 'O 3D não carregou neste navegador. A imagem permanece disponível.'}</div>}
       </div>}
     </div>
     <div className="realistic-wheel-toolbar">

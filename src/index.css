@@ -372,3 +372,15 @@ button:focus-visible, a:focus-visible { outline: 3px solid #83adff; outline-offs
  .process-stage { position:relative; min-height:780px; }
  .care-scenarios > button:hover { transform:none; }
 }
+
+/* A continuous reveal keeps the photographic asset visible while WebGL starts. */
+.wheel-showcase { position: relative; border-radius: 12px; overflow: hidden; border: 1px solid #ffffff25; background: #efefef; }
+.wheel-showcase-label { display: flex; justify-content: space-between; gap: 16px; padding: 16px 24px; background: #101b2d; color: #c4d2e6; font-size: 10px; letter-spacing: .14em; }
+.wheel-showcase .wheel-launch, .wheel-showcase .realistic-wheel-viewer { border: 0; border-radius: 0; }
+.wheel-launch > img { will-change: transform; }
+.realistic-wheel-poster { opacity: 1; transition: opacity .65s ease; }
+.realistic-wheel-poster.is-hidden { opacity: 0; pointer-events: none; visibility: hidden; transition: opacity .65s ease, visibility 0s .65s; }
+.realistic-wheel-stage iframe { transition: opacity .65s ease; }
+.wheel-launch:focus-visible, .realistic-wheel-toolbar button:focus-visible, .wheel-quote:focus-visible { outline: 3px solid #86b4ff; outline-offset: -4px; }
+@media (max-width:760px) { .wheel-showcase-label { padding: 14px 16px; font-size: 8px; letter-spacing: .08em; } .wheel-showcase .wheel-launch, .wheel-showcase .realistic-wheel-stage { height: min(460px, 65svh); min-height: 300px; } }
+@media (prefers-reduced-motion: reduce) { .realistic-wheel-poster, .realistic-wheel-stage iframe { transition: none; } .wheel-launch > img { will-change: auto; } }
