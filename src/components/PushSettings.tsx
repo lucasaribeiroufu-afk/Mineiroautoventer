@@ -57,7 +57,7 @@ export function PushSettings({ token, password }: { token?: string; password?: s
     <button type="button" className="portal-primary" disabled={busy} onClick={toggle}>{busy ? 'Aguarde…' : subscribed ? 'Desativar avisos' : 'Ativar notificações'}</button>
     {ios && !standalone && <p className="push-help">iPhone: Safari → Compartilhar → Adicionar à Tela de Início. Abra pelo ícone para ativar.</p>}
     {notice && <p role="status" className="push-help">{notice}</p>}
-    <p className="push-help">{remindersEnabled ? 'Lembrete programado para 30 minutos antes do horário confirmado.' : 'Os lembretes de horário ainda não estão ativos. Confira a agenda no site.'}</p>
+    {owner && <p className="push-help">{remindersEnabled ? 'Você receberá um lembrete 30 minutos antes de cada horário confirmado.' : 'Os lembretes de horário ainda não estão ativos. Confira a agenda no site.'}</p>}
     <small>A entrega depende da conexão, das permissões e dos ajustes do celular. Confira o horário no site.</small>
   </section>;
 }

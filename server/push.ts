@@ -34,11 +34,11 @@ export async function dispatchReadyPush(config?: any) {
       const check = await pushWorker('check', { id: job.id, attempt: job.attempts });
       if (!check.valid) result = 'cancelled';
       else {
-        const title = job.kind === 'reminder' ? 'Seu atendimento se aproxima' :
+        const title = job.kind === 'reminder' ? 'Atendimento da oficina se aproxima' :
           job.kind === 'message' ? 'Nova mensagem no atendimento' :
           job.kind === 'request' ? 'Novo pedido de agendamento' :
           job.kind === 'test' ? 'Notificações ativadas' : 'Agendamento atualizado';
-        const body = job.kind === 'reminder' ? 'Seu horário está próximo. Consulte os detalhes no site.' :
+        const body = job.kind === 'reminder' ? 'Há um atendimento confirmado próximo. Confira o horário e os detalhes no painel da oficina.' :
           job.kind === 'test' ? 'Este aparelho está pronto para receber os avisos da oficina.' :
           'Abra o site para acompanhar os detalhes com segurança.';
         const subscription = validatePushSubscription(job.subscription);
